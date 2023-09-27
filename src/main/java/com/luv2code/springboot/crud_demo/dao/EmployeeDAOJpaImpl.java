@@ -12,7 +12,7 @@ import java.util.List;
 public class EmployeeDAOJpaImpl implements EmployeeDAO
 {
     // Define field for EntityManager
-    private final EntityManager entityManager;
+    private EntityManager entityManager;
 
     // Set up constructor Injection
     @Autowired
@@ -38,4 +38,45 @@ public class EmployeeDAOJpaImpl implements EmployeeDAO
             return employees;
         }
     }
+
+    @Override
+    public Employee findById(Long id) {
+        Employee employee = entityManager.find(Employee.class, id);
+
+        return employee;
+    }
+
+    /*
+    * So you can see we don't use the @Transactional
+    * because all this code will be handled at Service Layer.
+    *
+    * The DAO doesn't handle the transactional.
+    * */
+    @Override
+    public Employee save(Employee employee)
+    {
+        /*
+        * +---------------------------+
+        * | CREATE OR UPDATE A RECORD |
+        * +---------------------------+
+        *
+        * The merge() method will create the employee if
+        * the id of the entity is zero or update if the id
+        * match with someone in the DB.
+        *
+        * Then it returns the employee from the DB.
+        * */
+        Employee createdEmployee = entityManager.merge(employee);
+
+        return createdEmployee;
+    }
+
+    @Override
+    public void deleteById(Long id)
+    {
+        Employee employee = this.findById(id);
+
+        entityManager.remove(employee);
+    }
+
 }
