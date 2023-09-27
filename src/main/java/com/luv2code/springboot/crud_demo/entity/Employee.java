@@ -3,8 +3,8 @@ package com.luv2code.springboot.crud_demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "students")
-public class Student
+@Table(name = "employees")
+public class Employee
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +19,10 @@ public class Student
     @Column(name = "email", length = 45)
     private String email;
 
-    public Student() { }
+    public Employee() { }
 
-    public Student(Long id, String firstName, String lastName, String email)
+    public Employee(String firstName, String lastName, String email)
     {
-        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -59,5 +58,15 @@ public class Student
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }
