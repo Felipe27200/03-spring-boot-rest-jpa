@@ -3,11 +3,9 @@ package com.luv2code.springboot.crud_demo.rest;
 import com.luv2code.springboot.crud_demo.entity.Employee;
 import com.luv2code.springboot.crud_demo.service.EmployeeService;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -50,5 +48,46 @@ public class EmployeeRestController
             throw new RuntimeException("Not find Employee with the id: " + employeeId);
 
         return employee;
+    }
+
+    // Add an Employee
+    @PostMapping("/employees")
+    /*
+    * +-------------------------------------+
+    * | OBTAIN THE JSON BODY IN THE REQUEST |
+    * +-------------------------------------+
+    *
+    * With the @RequestBody we can get the JSON type
+    * information bind to the request.
+    * */
+    public Employee addEmployee(@RequestBody Employee theEmployee)
+    {
+        // Set the employee to zero to force the creation of a new.
+        theEmployee.setId(0L);
+
+        Employee dbEmployee = employeeService.save(theEmployee);
+
+        return dbEmployee;
+    }
+
+    @PutMapping("/employees")
+    public Employee updateEmployee(@RequestBody Employee theEmployee)
+    {
+        Employee dbEmployee = employeeService.save(theEmployee);
+
+        return dbEmployee;
+    }
+
+    @DeleteMapping("/employees/{employeeId}")
+    public String deleteEmployee(@PathVariable Long employeeId)
+    {
+        Employee employee = employeeService.findById(employeeId);
+
+        if (employee == null)
+            throw new RuntimeException("Employee ID Not Found: " + employeeId);
+
+        employeeService.deleteById(employee.getId());
+
+        return "Employee deleted: \n" + employee.toString();
     }
 }
