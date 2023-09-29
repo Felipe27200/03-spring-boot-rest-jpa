@@ -1,12 +1,12 @@
 package com.luv2code.springboot.crud_demo.service;
 
-import com.luv2code.springboot.crud_demo.dao.EmployeeDAO;
+import com.luv2code.springboot.crud_demo.dao.EmployeeRepository;
 import com.luv2code.springboot.crud_demo.entity.Employee;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /*
 * Add an extra layer to manage business
@@ -16,39 +16,53 @@ import java.util.List;
 @Service
 public class EmployeeServiceImpl implements EmployeeService
 {
-    private EmployeeDAO employeeDAO;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO)
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository)
     {
-        this.employeeDAO = employeeDAO;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
     public List<Employee> findAll()
     {
-        return employeeDAO.findAll();
+        return employeeRepository.findAll();
     }
 
     @Override
-    public Employee findById(Long id) {
-        return employeeDAO.findById(id);
+    public Employee findById(Long id)
+    {
+        /*
+        * Different pattern instead of having to check
+        * for null, that is the purpose of Optional<>.
+        * */
+        Optional<Employee> result = this.employeeRepository.findById(id);
+
+        Employee employee = null;
+
+        /*
+        * If the value in result is different to null
+        * this method will return true, the other shape, return false.
+        * */
+        if (result.isPresent())
+        {
+            // Return the value assigned to the Optional<>
+            employee = result.get();
+        }
+        else
+            throw new RuntimeException("Did not find the id: " + id);
+
+        return employee;
     }
 
     @Override
-    /*
-    * +--------------------------+
-    * | MANAGE THE TRANSACTIONAL |
-    * +--------------------------+
-    * */
-    @Transactional
     public Employee save(Employee employee) {
-        return employeeDAO.save(employee);
+        return employeeRepository.save(employee);
     }
 
     @Override
-    @Transactional
     public void deleteById(Long id) {
-        employeeDAO.deleteById(id);
+        employeeRepository.deleteById(id);
     }
 }
